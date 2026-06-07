@@ -1,0 +1,106 @@
+Package prolixa ;
+
+Helpers
+    digit = ['0' .. '9'];
+    letter_upper = ['A' .. 'Z'];
+    letter_lower = ['a' .. 'z'];
+    letter = letter_upper | letter_lower;
+    underscore = '_';
+
+    sp = (' ' | 9);
+    nl = 10;
+    ascii = [32 .. 126];
+
+
+Tokens
+
+    t_ID = letter_upper (letter | underscore)*;
+
+    t_This = 'This';
+    t_is = 'is';
+    t_program = 'program';
+
+    t_Tt = 'It';
+    t_presentes = 'presents';
+
+    t_Let = 'Let';
+    t_us = 'us';
+    t_begin = 'begin';
+
+    t_That = 'That';
+    t_would = 'would';
+    t_be = 'be';
+    t_all = 'all';
+
+    t_alterable = 'alterable';
+    t_unalterable = 'unalterable';
+    t_vector = 'vector';
+    t_of = 'of';
+    t_x = 'x';
+    t_number = 'number';
+    t_symbol = 'symbol';
+    t_answer = 'answer';
+
+    t_value_symbol = '\'' ascii '\'';
+    t_string = '"' ascii* '"';
+    t_value_number = digit+ ('.' digit+)?;
+    t_yes = 'yes';
+    t_no = 'no';
+
+    t_capture = 'capture';
+    t_show = 'show';
+
+    t_just = 'just';
+    t_in = 'in';
+    t_case = 'case';
+    t_that = 'that';
+    t_otherwise = 'otherwise';
+    t_do = 'do';
+
+    t_as = 'as';
+    t_long = 'long';
+
+    t_considering = 'considering';
+    t_from = 'from';
+    t_to = 'to';
+    t_by = 'by';
+    t_abandon = 'abandon';
+    t_go = 'go';
+    t_next = 'next';
+    t_iteration = 'iteration';
+
+    t_assign = ':=';
+    t_eq = '=';
+    t_plus = '+';
+    t_minus = '-';
+    t_times = '*';
+    t_div = '/';
+    t_int_div = '//';
+    t_eqeq = '==';
+    t_neq = '!=';
+    t_leq = '<=';
+    t_geq = '>=';
+    t_lt = '<';
+    t_gt = '>';
+    t_and = 'and';
+    t_or = 'or';
+    t_xor = 'xor';
+    t_not = '!';
+
+    t_lparen = '(';
+    t_rparen = ')';
+    t_lbrack = '[';
+    t_rbrack = ']';
+    t_comma = ',';
+    t_dot = '.';
+    t_semi = ';';
+    t_colon = ':';
+
+    t_comment = '{' (ascii | nl)* '}';
+    t_sp = sp+;
+    t_nl = nl+;
+
+Ignored Tokens
+    t_sp;
+    t_nl;
+    t_comment;

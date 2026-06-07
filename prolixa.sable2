@@ -1,0 +1,194 @@
+Package prolixa;
+
+Helpers
+    digito = ['0' .. '9'];
+    letra_maiuscula = ['A' .. 'Z'];
+    letra_minuscula = ['a' .. 'z'];
+    letra = (letra_maiuscula | letra_minuscula);
+
+    espaco = 9 | 32; // 9 -> tabulacao
+    nova_linha = 10 | 13;
+
+    ascii_char = [32 .. 33] | [35 .. 38] | [40 .. 91] | [93 .. 126];
+    comentario_char = [0 .. 124] | [126..127];
+
+    regras = '\' ( 'n' | 't' | 'b' | 'r' | 'a' | ''' | '"' | '?' | '\' | 'f' | 'v' | '0');
+
+    abertura_comentario = '{';
+    fechamento_comentario = '}';
+
+Tokens
+    comentario = abertura_comentario (comentario_char)* fechamento_comentario;
+    id = letra_maiuscula+ (letra | '_')*;
+    this = 'This';
+    is = 'is';
+    program = 'program';
+    it = 'It';
+    presents = 'presents';
+    let = 'Let';
+    us = 'us';
+    begin = 'begin';
+    that = 'That';
+    would = 'would';
+    be = 'be';
+    all = 'all';
+    alterable = 'alterable';
+    unalterable = 'unalterable';
+    vector = 'vector';
+    of = 'of';
+    x = 'x';
+    number = 'number';
+    symbol = 'symbol';
+    answer = 'answer';
+    valor_symbol = ''' (ascii_char | regras | '"') ''';
+    string = '"' (ascii_char | regras | ''' | '\')* '"';
+    valor_number = digito+ | digito+ '.' digito+;
+    yes = 'yes';
+    no = 'no';
+    valor_answer = 'yes' | 'no';
+    capture = 'capture';
+    show = 'show';
+    valor_show = valor_number | valor_symbol;
+    just = 'just';
+    in = 'in';
+    case = 'case';
+    that2 = 'that'; // evita conflito com that
+    otherwise = 'otherwise';
+    do = 'do';
+    as = 'as';
+    long = 'long';
+    considering = 'considering';
+    from = 'from';
+    to = 'to';
+    by = 'by';
+    abandon = 'abandon';
+    go = 'go';
+    next = 'next';
+    iteration = 'iteration';
+    igual = '=';
+    igual_atribuicao = ':=';
+    soma = '+';
+    subtracao = '-';
+    multiplicacao = '*';
+    divisao = '/';
+    divisao_inteira = '//';
+    igual_comparacao = '==';
+    nao_igual = '!=';
+    menor_igual = '<=';
+    maior_igual = '>=';
+    menor = '<';
+    maior = '>';
+    and = 'and';
+    or = 'or';
+    xor = 'xor';
+    nao = '!';
+    parenteses_esquerda = '(';
+    parenteses_direita = ')';
+    colchetes_esquerda = '[';
+    colchetes_direita = ']';
+    virgula = ',';
+    ponto = '.';
+    ponto_virgula = ';';
+    dois_pontos = ':';
+    espacos = espaco+;
+    novas_linhas = nova_linha+;
+
+Ignored Tokens
+    espacos,
+    novas_linhas,
+    comentario;
+
+Productions
+    programa =
+              {completo} this is program id ponto declaracoes comandos
+            | {so_declaracoes} this is program id ponto declaracoes
+            | {so_comandos} this is program id ponto comandos
+            | {vazio} this is program id ponto;
+
+    declaracoes = it presents dois_pontos lista_declaracoes;
+
+    comandos = let us begin dois_pontos lista_comandos that would be all ponto;
+
+    declaracao =
+                  {declaracao_alt} alterable tipo id ponto_virgula
+                | {declaracao_unalt} unalterable tipo id ponto_virgula 
+                | {declaracao_unalt_valor} unalterable tipo id igual valor ponto_virgula 
+                | {declaracao_vector} vector of tipo parenteses_esquerda expressao parenteses_direita id ponto_virgula
+                | {declaracao_matriz} vector of tipo parenteses_esquerda expressao 'x' expressao parenteses_direita id ponto_virgula;
+
+    tipo = 
+          {tipo_number} number 
+        | {tipo_answer} answer 
+        | {tipo_symbol} symbol;
+
+    var =
+          {var_id} id 
+        | {var_id_exp} id parenteses_esquerda expressao parenteses_direita 
+        | {var_ids_exps} id parenteses_esquerda expressao virgula expressao parenteses_direita;
+
+    unalt = {unalt_id} id;
+
+    valor = 
+              {valor_number} valor_number
+            | {valor_symbol} valor_symbol
+            | {valor_answer} valor_answer
+            | {valor_string} string;
+
+    comando =
+          {atrib_unalterable} var igual_atribuicao expressao ponto_virgula
+        | {atrib_alterable} unalt igual expressao ponto_virgula
+        | {capture} capture parenteses_esquerda lista_vars parenteses_direita ponto_virgula
+        | {show} show parenteses_esquerda lista_expressoes parenteses_direita ponto_virgula
+        | {condicional} condicional
+        | {repeticao} repeticao
+        | {controle} controle_fluxo
+        | {bloco_comando} bloco;
+
+    lista_declaracoes = declaracao | lista_declaracoes declaracao;
+
+    lista_comandos = comando | lista_comandos comando;
+
+    bloco = 
+          {declaracoes_bloco} colchetes_esquerda declaracao colchetes_direita
+        | {comandos_bloco} colchetes_esquerda comando colchetes_direita
+        | {ambos_bloco} colchetes_esquerda declaracao colchetes_direita colchetes_esquerda comando colchetes_direita
+        | {vazio_bloco}; 
+
+
+    lista_vars = var | lista_vars virgula var;
+
+    lista_expressoes = expressao | lista_expressoes virgula expressao;
+
+    condicional =
+                  {if_simples} just in case that2 parenteses_esquerda expressao parenteses_direita do comando
+                | {if_else} just in case that2 parenteses_esquerda expressao parenteses_direita do comando otherwise do comando;
+
+    repeticao =
+                {while} as long as parenteses_esquerda expressao parenteses_direita do comando
+              | {for} considering var from expressao to expressao by expressao do comando;
+
+    controle_fluxo =
+                     {abandon} abandon ponto_virgula
+                   | {go_next} go to next iteration ponto_virgula;
+
+    expressao =
+                {exp_valor} valor 
+              | {identificador} var
+              | {vector_acesso} var colchetes_esquerda expressao colchetes_direita
+              | {parenteses} parenteses_esquerda expressao parenteses_direita
+              | {menos_unario} subtracao expressao
+              | {soma} expressao soma expressao
+              | {subtracao} expressao subtracao expressao
+              | {multiplicacao} expressao multiplicacao expressao
+              | {divisao} expressao divisao expressao
+              | {divisao_inteira} expressao divisao_inteira expressao
+              | {igual_comp} expressao igual_comparacao expressao
+              | {nao_igual} expressao nao_igual expressao
+              | {menor} expressao menor expressao
+              | {maior} expressao maior expressao
+              | {menor_igual} expressao menor_igual expressao
+              | {maior_igual} expressao maior_igual expressao
+              | {negacao} nao expressao
+              | {and_logico} expressao and expressao
+              | {or_logico} expressao or expressao
+              | {xor_logico} expressao xor expressao;

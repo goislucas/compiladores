@@ -1,0 +1,224 @@
+Package prolixa;
+
+Helpers
+    digito = ['0' .. '9'];
+    letra_maiuscula = ['A' .. 'Z'];
+    letra_minuscula = ['a' .. 'z'];
+    letra = (letra_maiuscula | letra_minuscula);
+
+    espaco = 9 | 32; // 9 -> tabulacao
+    nova_linha = 10 | 13;
+
+    ascii_char = [32 .. 33] | [35 .. 38] | [40 .. 91] | [93 .. 126];
+    comentario_char = [0 .. 124] | [126..127];
+
+    regras = '\' ( 'n' | 't' | 'b' | 'r' | 'a' | ''' | '"' | '?' | '\' | 'f' | 'v' | '0');
+
+    abertura_comentario = '{';
+    fechamento_comentario = '}';
+
+Tokens
+    comentario = abertura_comentario (comentario_char)* fechamento_comentario;
+    this = 'This';
+    is = 'is';
+    program = 'program';
+    it = 'It';
+    presents = 'presents';
+    let = 'Let';
+    us = 'us';
+    begin = 'begin';
+    that = 'That';
+    would = 'would';
+    be = 'be';
+    all = 'all';
+
+    id = letra_maiuscula+ (letra | '_')*;
+
+    alterable = 'alterable';
+    unalterable = 'unalterable';
+    vector = 'vector';
+    of = 'of';
+    x = 'x';
+    number = 'number';
+    symbol = 'symbol';
+    answer = 'answer';
+    valor_symbol = ''' (ascii_char | regras | '"') ''';
+    string = '"' (ascii_char | regras | ''' | '\')* '"';
+    valor_number = digito+ | digito+ '.' digito+;
+    valor_answer = 'yes' | 'no';
+    capture = 'capture';
+    show = 'show';
+    just = 'just';
+    in = 'in';
+    case = 'case';
+    that2 = 'that'; // evita conflito com that
+    otherwise = 'otherwise';
+    do = 'do';
+    as = 'as';
+    long = 'long';
+    considering = 'considering';
+    from = 'from';
+    to = 'to';
+    by = 'by';
+    abandon = 'abandon';
+    go = 'go';
+    next = 'next';
+    iteration = 'iteration';
+    igual = '=';
+    igual_atribuicao = ':=';
+    soma = '+';
+    subtracao = '-';
+    multiplicacao = '*';
+    divisao = '/';
+    divisao_inteira = '//';
+    igual_comparacao = '==';
+    nao_igual = '!=';
+    menor_igual = '<=';
+    maior_igual = '>=';
+    menor = '<';
+    maior = '>';
+    and = 'and';
+    or = 'or';
+    xor = 'xor';
+    nao = '!';
+    parenteses_esquerda = '(';
+    parenteses_direita = ')';
+    colchetes_esquerda = '[';
+    colchetes_direita = ']';
+    virgula = ',';
+    ponto = '.';
+    ponto_virgula = ';';
+    dois_pontos = ':';
+    espacos = espaco+;
+    novas_linhas = nova_linha+;
+
+Ignored Tokens
+    espacos,
+    novas_linhas,
+    comentario;
+
+Productions
+
+programa = this is program id ponto declaracoes? comandos?;
+
+declaracoes = it presents dois_pontos declaracao_inicial+;
+
+comandos = let us begin dois_pontos comando+ that would be all ponto;
+
+declaracao_inicial =
+    {variavel} alterable tipo id ponto_virgula |
+    {constante} unalterable tipo id inicializacao_constante? ponto_virgula |
+    {vetor} vector of tipo parenteses_esquerda exp dimensoes_vetor? parenteses_direita id ponto_virgula;
+
+declaracao_bloco =
+    {variavel} alterable tipo id inicializacao_varivel? ponto_virgula |
+    {constante} unalterable tipo id inicializacao_constante? ponto_virgula |
+    {vetor} vector of tipo parenteses_esquerda exp dimensoes_vetor? parenteses_direita id ponto_virgula;
+
+inicializacao_varivel = igual_atribuicao valor;
+inicializacao_constante = igual valor;
+
+dimensoes_vetor = x exp;
+
+virgulas_ids = virgula id;
+
+tipo =
+    {number} number |
+    {answer} answer |
+    {symbol} symbol;
+
+comando = comando_composto;
+
+comando_composto =
+    {condicional_simples} just in case that2 parenteses_esquerda exp parenteses_direita do comando_composto |
+    {laco_while} as long_as parenteses_esquerda exp parenteses_direita do comando_composto |
+    {laco_for} considering var from inicio to fim by incremento do comando_composto |
+    {comando_simples} comando_simples;
+
+comando_simples =
+    {atribuicao_var} var igual_atribuicao exp ponto_virgula |
+    {atribuicao_const} unalt igual exp ponto_virgula |
+    {capture} capture parenteses_esquerda lista_vars parenteses_direita ponto_virgula |
+    {show} show parenteses_esquerda lista_exps parenteses_direita ponto_virgula |
+    {abandon} abandon ponto_virgula |
+    {continue} go to next iteration ponto_virgula |
+    {bloco} bloco;
+
+long_as = long as;
+inicio = exp;
+fim = exp;
+incremento = exp;
+
+else_opcional = otherwise do comando_composto;
+
+lista_vars = var virgulas_vars*;
+
+virgulas_vars = virgula var;
+
+lista_exps = exp virgulas_exps*;
+
+virgulas_exps = virgula exp;
+
+bloco = colchetes_esquerda declaracoes_bloco* comandos_bloco* colchetes_direita else_opcional?;
+
+declaracoes_bloco = declaracao_bloco;
+
+comandos_bloco = comando;
+
+indices_vetor = virgula exp;
+
+unalt = id;
+
+var =
+    {simples} id |
+    {indexada} id parenteses_esquerda exp indices_vetor* parenteses_direita;
+
+valor =
+    {symbol} valor_symbol |
+    {answer} valor_answer |
+    {number} valor_number |
+    {string} string;
+
+exp = exp_ou;
+
+exp_ou =
+    {ou_logico} exp_ou or exp_xor |
+    {exp_xor} exp_xor;
+
+exp_xor =
+    {ou_exclusivo} exp_xor xor exp_e |
+    {exp_e} exp_e;
+
+exp_e =
+    {e_logico} exp_e and exp_relacional |
+    {exp_relacional} exp_relacional;
+
+exp_relacional =
+    {igual} exp_relacional igual_comparacao exp_aditiva |
+    {diferente} exp_relacional nao_igual exp_aditiva |
+    {menor_igual} exp_relacional menor_igual exp_aditiva |
+    {maior_igual} exp_relacional maior_igual exp_aditiva |
+    {menor} exp_relacional menor exp_aditiva |
+    {maior} exp_relacional maior exp_aditiva |
+    {exp_aditiva} exp_aditiva;
+
+exp_aditiva =
+    {soma} exp_aditiva soma exp_multiplicativa |
+    {subtracao} exp_aditiva subtracao exp_multiplicativa |
+    {exp_multiplicativa} exp_multiplicativa;
+
+exp_multiplicativa =
+    {multiplicacao} exp_multiplicativa multiplicacao exp_unaria |
+    {divisao} exp_multiplicativa divisao exp_unaria |
+    {divisao_inteira} exp_multiplicativa divisao_inteira exp_unaria |
+    {exp_unaria} exp_unaria;
+
+exp_unaria =
+    {menos_unario} subtracao exp_unaria |
+    {negacao} nao exp_unaria |
+    {exp_primaria} exp_primaria;
+
+exp_primaria =
+    {valor} valor |
+    {variavel} var |
+    {parenteses} parenteses_esquerda exp parenteses_direita;

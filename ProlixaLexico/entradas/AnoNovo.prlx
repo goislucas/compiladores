@@ -1,0 +1,13 @@
+This is program AnoNovo.
+
+It presents:
+
+	unalterable number AnoNovo;
+
+Let us begin:
+	AnoNovo := 2026;
+	show ("Feliz");
+	show (AnoNovo);
+	show ("!");
+
+That would be all.

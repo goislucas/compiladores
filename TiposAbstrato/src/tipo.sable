@@ -1,0 +1,48 @@
+Package tipo;
+
+Helpers
+	underline = '_';
+	letra_minuscula = ['a'..'z'];
+	letra_maiscula = ['A'..'Z'];
+	letra = letra_minuscula | letra_maiscula;
+	numero = ['0'..'9'];
+
+Tokens
+    branco = (' ' | 13 | 10)+;
+    inteiro = 'int';
+    real = 'float';
+    virgula = ',';
+    ponto_virgula = ';';
+    id = (letra | underline)(letra | numero | underline)*;
+    
+Ignored Tokens
+    branco;
+
+Productions
+
+    //o P. pode ser usado pra simplificar a chamada aos símbolos do abstrato
+    
+    p_inicio {-> a_inicio}  = 
+    	p_declaracao* {->New a_inicio.ar_inicio([p_declaracao.a_declaracao])} ;
+    	
+	p_declaracao {-> a_declaracao} = 
+		[tipo_esq]:p_tipo p_var p_outra_var* ponto_virgula 
+		{-> New a_declaracao.ar_declaracoes(tipo_esq.a_tipo, [p_var.a_var, p_outra_var.a_var]) } ; 
+		
+    p_outra_var {-> a_var} = 
+       virgula p_var {-> p_var.a_var } ; 
+    
+    p_var {-> a_var} = 
+       id {-> New a_var.id(id)};
+    
+    p_tipo {-> a_tipo} = 
+              {inteiro} inteiro {-> New a_tipo.ar_inteiro (inteiro)}
+    		| {real} real {-> New a_tipo.ar_real(real)};
+    		
+Abstract Syntax Tree
+
+    a_inicio  	= {ar_inicio} [ar_declaracoes]:a_declaracao*;
+    a_declaracao  = {ar_declaracoes} a_tipo [identificadores]:a_var+;
+    a_tipo 		= {ar_inteiro} inteiro 
+                | {ar_real} real;
+    a_var         = {id} id;

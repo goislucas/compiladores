@@ -1,0 +1,14 @@
+Package prolixa ;
+
+Helpers
+    digit = ['0' .. '9'] ;
+    sp = ' ' ;
+    nl = 10 ;
+
+Tokens
+    integer = digit+ sp*;
+    plus = '+' sp*;
+    semi = ';' nl?;
+
+Productions
+    program = [left]:integer plus [right]:integer semi;

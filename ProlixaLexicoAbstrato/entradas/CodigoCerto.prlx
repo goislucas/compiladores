@@ -1,0 +1,16 @@
+This is program CodigoCerto.
+
+It presents:
+
+    alterable number Numero;
+
+Let us begin:
+
+	{ Verificaremos se nosso codigo esta certo usando o operador //}
+
+	Numero := 47 // 10;
+
+	just in case that (Numero == 4) do
+		show ("O codigo esta correto!");
+
+That would be all.

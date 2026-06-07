@@ -1,0 +1,84 @@
+This is program ParImpar.
+
+It presents:
+
+	unalterable number Dois;
+
+Let us begin:
+
+	Dois = 2;
+
+	[
+        alterable answer Parar := no;
+        alterable number QuantidadeNumeros;
+        alterable number Numero;
+        vector of number (10) VetorNumeros;
+    ]
+	as long as (!Parar) do [ 
+
+		show ("Informe a quantidade de numeros: ");
+		capture (QuantidadeNumeros);
+		show ('\n');
+
+		just in case that ((QuantidadeNumeros < 0) or (QuantidadeNumeros == 0)) do [
+			show ("Erro: Tamanho invalido\n");
+			abandon;
+		]
+
+		just in case that (QuantidadeNumeros > 10) do [
+			show ("Erro: Tamanho maximo de numeros e 10\n");
+			go to next iteration;
+		]
+			
+		just in case that (QuantidadeNumeros <= 10) do [
+			considering Index from 1 to (QuantidadeNumeros+1) by 1 do [
+				
+				show ("Informe o numero: ");
+				capture (Numero);
+				show ('\n');
+				
+				just in case that (0 >= Numero) do [
+					show ("Erro: Numero negativo ou igual a zero\n");
+					Index = Index - 1; {mantem a posicao atual do Index}
+					go to next iteration;
+				]
+
+				VetorNumeros (Index) := Numero;
+			]
+
+			considering Index from 1 to (QuantidadeNumeros+1) by 1 do [
+				
+				show ("O numero da posicao ");
+				show (Index);
+				show (" igual a ");
+				show (VetorNumeros(Index));
+				show (" eh ");
+			
+				Numero := VetorNumeros(Index);
+				just in case that ((((Numero/Dois)*Dois))!=Numero) do [
+					show ("impar\n");
+				] otherwise do [
+					show ("par\n");
+				]
+			]
+		]	
+		
+		[
+		    alterable symbol SimOuNao;
+
+            show ("Deseja parar? S - Sim | N - Nao\n");
+            capture (SimOuNao);
+
+            just in case that ((SimOuNao xor  'N') and (SimOuNao ==  'S')) do [
+                Parar := yes;
+                go to next iteration;
+            ]
+
+            just in case that ((SimOuNao !=  'S') and (SimOuNao !=  'N')) do [
+                show ("Exit: Resposta invalida\n");
+                abandon;
+            ]
+		]
+	]
+
+That would be all.
